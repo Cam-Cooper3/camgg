@@ -5,18 +5,18 @@ const app = express();
 const PORT = 3000;
 
 const API_KEY = process.env.RIOT_API_KEY;
-const tag_line = "NA1";
-const acc_region = 'americas';
-const sum_region = 'na1';
 
 app.use(express.static('public'));
 
-app.get('/summoner/:name', async (req, res) => {
+app.get('/summoner/:name/:tagline', async (req, res) => {
     const summonerName = encodeURIComponent(req.params.name);
+    const summonerTagline = encodeURIComponent(req.params.tagline);
+    const acc_region = 'americas';
+    const sum_region = 'na1';
+    
     try {
         // Get puuid and gameName using summoner name and tagline
-        const getPuuidResponse = await axios.get(`https://${acc_region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${summonerName}/${tag_line}?api_key=${API_KEY}`);
-
+        const getPuuidResponse = await axios.get(`https://${acc_region}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${summonerName}/${summonerTagline}?api_key=${API_KEY}`);
         const { puuid, gameName } = getPuuidResponse.data;
 
         // Get summoner data using puuid
