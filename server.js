@@ -21,13 +21,17 @@ app.get('/summoner/:name', async (req, res) => {
 
         // Get summoner data using puuid
         const summonerResponse = await axios.get(`https://${sum_region}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${API_KEY}`);
+        const summonerId = summonerResponse.data.id; // Get the summoner ID for ranked data
 
-        // Send all data from summonerResponse along with gameName and profileIconId
+        // Get ranked data using summoner ID
+        const rankedResponse = await axios.get(`https://${sum_region}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${API_KEY}`);
+
+        // Send all data to the frontend, including ranked data
         res.json({
-            summonerName: gameName, 
-            profileIconId: summonerResponse.data.profileIconId, // Include profileIconId
-            summonerLevel: summonerResponse.data.summonerLevel, // Include summoner level
-            ...summonerResponse.data
+            summonerName: gameName,
+            summonerLevel: summonerResponse.data.summonerLevel,
+            profileIconId: summonerResponse.data.profileIconId,
+            rankedData: rankedResponse.data
         });
     } catch (error) {
         if (error.response) {

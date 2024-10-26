@@ -27,13 +27,37 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
 });
 
 function displayStats(data, latestVersion) {
-    console.log("Profile Icon ID: ", data.profileIconId); // Add this to check the icon ID
     const statsDiv = document.getElementById('stats');
-    const profileIconUrl = `http://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/profileicon/${data.profileIconId}.png`; 
+    const profileIconUrl = `http://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/profileicon/${data.profileIconId}.png`;
+
+    let rankedHtml = '';
+
+    // Check if ranked data is available
+    if (data.rankedData && data.rankedData.length > 0) {
+        rankedHtml = '<h3>Ranked Stats:</h3>';
+        data.rankedData.forEach(queue => {
+            const wins = queue.wins;
+            const losses = queue.losses;
+            const totalGames = wins + losses;
+            const winRate = ((wins / totalGames) * 100).toFixed(2);  // Calculate win rate
+
+            rankedHtml += `
+                <p>Rank: ${queue.tier} ${queue.rank}</p>
+                <p>LP: ${queue.leaguePoints} LP</p>
+                <p>Wins: ${wins}</p>
+                <p>Losses: ${losses}</p>
+                <p>Win Rate: ${winRate}%</p>
+            `;
+        });
+    } else {
+        rankedHtml = '<p>This summoner has no ranked stats available.</p>';
+    }
 
     statsDiv.innerHTML = `
         <h2>Summoner: ${data.summonerName}</h2>
         <p>Level: ${data.summonerLevel}</p>
         <img src="${profileIconUrl}" alt="Profile Icon" id="profile-icon" style="width:100px;height:100px;">
+        ${rankedHtml}
     `;
 }
+
