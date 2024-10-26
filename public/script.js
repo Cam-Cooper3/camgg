@@ -2,8 +2,19 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
     e.preventDefault();
 
     const summonerName = document.getElementById('summoner-name').value.trim(); 
+    var summonerTagline = document.getElementById('summoner-tagline').value.trim();
+    
+    // If the user does not enter a tagline, default to NA1
+    var summonerTagline = summonerTagline || 'NA1';
+
+    // Remove the # from the tagline if the user enters it
+    if (summonerTagline.includes("#")) {
+        var summonerTagline = summonerTagline.replace("#", "");
+    }
+
+    // Display warning to user if nothing is entered in prompt(s)
     if (!summonerName) {
-        alert("Please enter a summoner name.");
+        alert("Please enter both summoner name and tagline.");
         return;
     }
 
@@ -14,7 +25,7 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
         const latestVersion = versions[0];  // Get the latest version
 
         // Send a request to the server to get summoner data
-        const response = await fetch(`/summoner/${encodeURIComponent(summonerName)}`);
+        const response = await fetch(`/summoner/${encodeURIComponent(summonerName)}/${encodeURIComponent(summonerTagline)}`);
         if (!response.ok) {
             throw new Error('Summoner not found or error in API call.');
         }
@@ -22,7 +33,7 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
         displayStats(data, latestVersion);  // Pass the latest version to displayStats
     } catch (error) {
         console.error('Error fetching summoner data:', error);
-        document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found or API issue.';
+        document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found';
     }
 });
 
@@ -39,7 +50,7 @@ function displayStats(data, latestVersion) {
             const wins = queue.wins;
             const losses = queue.losses;
             const totalGames = wins + losses;
-            const winRate = ((wins / totalGames) * 100).toFixed(2);  // Calculate win rate
+            const winRate = ((wins / totalGames) * 100).toFixed(2);
 
             rankedHtml += `
                 <p>Rank: ${queue.tier} ${queue.rank}</p>
@@ -56,8 +67,7 @@ function displayStats(data, latestVersion) {
     statsDiv.innerHTML = `
         <h2>Summoner: ${data.summonerName}</h2>
         <p>Level: ${data.summonerLevel}</p>
-        <img src="${profileIconUrl}" alt="Profile Icon" id="profile-icon" style="width:100px;height:100px;">
+        <img src="${profileIconUrl}" alt="Profile Icon" id="profile-icon" style="width:100px;height:100px;border-radius:50px">
         ${rankedHtml}
     `;
 }
-
