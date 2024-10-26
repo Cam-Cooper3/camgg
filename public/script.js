@@ -20,3 +20,12 @@ function displayStats(data) {
         <p>Level: ${data.summonerLevel}</p>
     `;
 }
+
+async function displayStats(data) {
+    console.log(data); // Log the data to check its structure
+    const statsDiv = document.getElementById('stats');
+    statsDiv.innerHTML = `
+        <h2>Summoner: ${data.name || "Name not found"}</h2>
+        <p>Level: ${data.summonerLevel || "N/A"}</p>
+    `;
+}
