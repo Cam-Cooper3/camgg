@@ -1,0 +1,17 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: #1c1c1e;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+#stats {
+    margin-top: 20px;
+}
