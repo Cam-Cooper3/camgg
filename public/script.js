@@ -12,11 +12,15 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
         summonerTagline = summonerTagline.replace("#", "");
     }
 
-    // Display page warning to user if nothing is entered in prompt(s)
+    // Display warning to user if nothing is entered in prompt(s)
     if (!summonerName) {
         alert("Please enter both summoner name and tagline.");
         return;
     }
+
+    // Hide stats and in-game-status while fetching data
+    document.getElementById('stats').style.display = 'none';
+    document.getElementById('in-game-status').style.display = 'none';
 
     // Show loading spinner
     document.getElementById('loading-spinner').style.display = 'block';
@@ -33,13 +37,17 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
             throw new Error('Summoner not found or error in API call.');
         }
         const data = await response.json();
-        displayStats(data, latestVersion);  // Pass the latest version to displayStats
+        displayStats(data, latestVersion);
 
-        // Pass puuid and latest version for in-game status check
-        checkInGameStatus(data.puuid, latestVersion);  // Pass latestVersion here
+        checkInGameStatus(data.puuid, latestVersion);
+
+        // Show the stats div after successfully fetching summoner data
+        document.getElementById('stats').style.display = 'block';
+
     } catch (error) {
         console.error('Error fetching summoner data:', error);
         document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found';
+        document.getElementById('stats').style.display = 'block';  // Show the error message
     } finally {
         // Hide loading spinner
         document.getElementById('loading-spinner').style.display = 'none';
@@ -54,6 +62,7 @@ async function checkInGameStatus(puuid, latestVersion) {
 
         if (inGameData.message) {
             document.getElementById('in-game-status').innerText = inGameData.message;
+            document.getElementById('in-game-status').style.display = 'block';  // Show the error message
         } else {
             // Find the correct participant by matching puuid
             const participant = inGameData.participants.find(p => p.puuid === puuid);
@@ -63,7 +72,7 @@ async function checkInGameStatus(puuid, latestVersion) {
                 const championName = await getChampionNameById(participant.championId, latestVersion);
                 const timeInGame = formatTimeInGame(inGameData.gameLength);
                 
-                // Check if the match is ranked
+                // Check if the match is ranked or not
                 const rankedStatus = isRankedGame(inGameData.gameQueueConfigId) ? 'Ranked Game' : 'Normal Game';
 
                 document.getElementById('in-game-status').innerHTML = `
@@ -73,13 +82,17 @@ async function checkInGameStatus(puuid, latestVersion) {
                     Champion: ${championName} <br>
                     Time in game: ${timeInGame}
                 `;
+                // Show the in-game-status div after successfully fetching in-game data
+                document.getElementById('in-game-status').style.display = 'block';
             } else {
                 document.getElementById('in-game-status').innerText = 'Summoner not found in game.';
+                document.getElementById('in-game-status').style.display = 'block';  // Still show the div
             }
         }
     } catch (error) {
         console.error('Error fetching in-game status:', error);
         document.getElementById('in-game-status').innerText = 'Error retrieving in-game status.';
+        document.getElementById('in-game-status').style.display = 'block';  // Show the error message
     }
 }
 
@@ -119,9 +132,8 @@ function isRankedGame(gameQueueConfigId) {
 
 // Function to format the in-game time
 function formatTimeInGame(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
+    const minutes = (Math.floor(seconds / 60) + 3);
+    return `${minutes}m`;
 }
 
 // Function to display summoner ranked stats
