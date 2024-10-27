@@ -77,7 +77,7 @@ league-app/
 │   └── utils.js            # Utility functions for the frontend
 └── routes/                 # API routes for backend
     ├── summonerRoutes.js   # Routes for summoner-related API calls
-    └── inGameRoutes.js     # Routes for live game data (feature paused)`
+    └── inGameRoutes.js     # Routes for live game data
 ```
 
 ## API Used
