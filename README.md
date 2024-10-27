@@ -2,21 +2,26 @@
 
 ## Overview
 
-**CAM.GG** is a League of Legends stats tool that retrieves real-time summoner data, including rank, win rate, and more using Riot Games' API. The project also includes a loading spinner to provide visual feedback while data is being fetched.
+**CAM.GG** is a web application that allows users to search for a League of Legends summoner by name and retrieve their ranked data, such as rank and win rate, using the Riot Games API. It also displays whether the summoner is currently in a live game, including information about the game type, mode, and the champion being played.
 
 ## Features
 
-- Retrieve summoner details (level, profile icon, ranked stats) by entering a summoner's name and tagline.
-- Displays ranked stats, including rank tier, LP, wins, losses, and win rate.
-- Responsive design with a dark theme for a smooth user experience.
-- Loading spinner for visual feedback during data fetching.
+- Fetch summoner data based on the summoner's name and tagline.
+- Display summoner's rank and win rate for different queue types.
+- Display live game status, including game mode, match type (Ranked/Normal/Custom), and champion details.
+- Shows a loading spinner while fetching data.
+- Basic error handling for invalid requests or API issues.
 
 ## Tech Stack
 
-- **Node.js** (Express for server-side handling)
-- **Axios** (for making API requests)
-- **HTML/CSS/JavaScript** (for the frontend)
-- **Riot Games API** (for summoner data)
+- **Node.js & Express**: Handles backend routes and API requests.
+- **Axios**: For making HTTP requests to Riot's API.
+- **HTML/CSS**: Frontend structure and styling.
+- **JavaScript**: Frontend interactions and data rendering.
+- **Dotenv**: For managing environment variables.
+- **Riot Games API**: Used for fetching summoner and ranked data.
+- **Webpack**: For bundling frontend JavaScript.
+- **CommonJS**: For module handling in Node.js.
 
 ## Installation and Setup
 
@@ -29,8 +34,8 @@
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/cam.gg.git
-    cd cam.gg
+    git clone https://github.com/yourusername/league-app.git
+    cd league-app
     ```
 
 2. **Install dependencies**:
@@ -39,42 +44,87 @@
     ```
 
 3. **Set up environment variables**:
-    - Create a `.env` file in the root directory.
+    - Create a `.env` file in the `config/` directory.
     - Add your **Riot API Key** to the `.env` file like this:
       ```bash
       RIOT_API_KEY=your-api-key-here
       ```
 
-4. **Run the server**:
+4. **Bundle the frontend using Webpack**:
     ```bash
-    node server.js
+    npx webpack --config config/webpack.config.js
     ```
 
-5. Open your browser and navigate to `http://localhost:3000` to use the tool.
+5. **Run the server**:
+    ```bash
+    node ./server/server.js
+    ```
+
+6. Open your browser and navigate to `http://localhost:3000` to access the tool.
+
+> [!NOTE]
+> - **During development:** Enable watch mode in `webpack.config.js` to automatically bundle when you make changes.
+> - **Before deployment:** Manually bundle once with `webpack --mode production` for optimized production builds and change `watch: false` in `webpack.config.js`.
 
 ## Usage
 
 1. Enter a **Summoner Name** and a **Tagline** (e.g., `SummonerName` with `#NA1`).
 2. Click **Get Stats** to retrieve summoner data.
 3. The summoner's profile information, ranked stats, and win rate will be displayed.
-4. A loading spinner will appear while data is being fetched.
-5. ...
+4. If the summoner is currently in a game, the in-game status will be shown, including game mode, match type (Ranked/Normal/Custom), and the champion they are playing.
 
 ## Project Structure
 
 ```bash
-├── public
-│   ├── index.html      # Main webpage structure
-│   ├── script.js       # JavaScript for handling API requests and DOM updates
-│   ├── style.css       # Styling for the webpage (dark theme, spinner, etc.)
-├── server.js           # Node.js server using Express and Axios
-├── .env                # Environment variables (not included in the repository)
-├── README.md           # Project documentation (this file)
-├── package.json        # Project dependencies and scripts
+league-app/
+├── common/                   # Shared utilities between frontend and backend
+│   └── commonUtils.js        # Utility functions shared between frontend and backend
+├── config/                   # Contains environment variables and Webpack configuration
+│   ├── .env                  # Environment variables (API key, ignored in Git) 
+│   └── webpack.config.js     # Webpack configuration for bundling frontend
+├── node_modules/             # Installed dependencies (ignored in Git)
+├── public/                   # Frontend code and assets
+│   ├── bundle.js             # Loads all fontend code in single request (ignored in Git)
+│   ├── index.html            # Main HTML file
+│   ├── script.js             # Frontend JavaScript logic
+│   ├── style.css             # Styling for the application
+│   └── utils.js              # Frontend-specific utilities
+├── server/                   # Backend server and routes
+│   ├── routes/               # API routes for backend
+│   │   ├── summonerRoutes.js # Routes for summoner-related API calls
+│   │   ├── inGameRoutes.js   # Routes for live game data
+│   │   └── utils.js          # Backend-specific utilities
+│   └── server.js             # Main server-side code
+├── .gitignore                # Specifies files and directories to ignore in Git
+├── package.json              # Project metadata and dependencies
+├── package-lock.json         # Dependency lock file
+└── README.md                 # Project documentation
 ```
 
-## API Used
+**Shared Utilities (common/ directory):**
+
+-   **commonUtils.js:** Contains shared utility functions, such as retrieving game modes, formatting in-game time, and checking ranked status, used by both frontend and backend.
+
+**Frontend (public/ directory):**
+
+-   **index.html:** Basic structure with inputs for summoner name and tagline, and a button to submit the form.
+-   **script.js:** Handles the frontend logic, such as making API calls to the backend, handling responses, and updating the UI.
+-   **style.css:** Provides styling, mainly focusing on a dark theme with clean, minimal design.
+-   **utils.js:** Contains frontend-specific utilities, such as fetching champion names from the Riot API and exporting shared utilities.
+
+**Backend (/server/routes/ directories):**
+
+-   **server.js:** Main server file, setting up Express.js, serving static files, and routing API requests to different modules (summoner and in-game data).
+-   **summonerRoutes.js:** Fetches summoner data and ranked stats from the Riot API using summoner name and tagline.
+-   **inGameRoutes.js:** Fetches current in-game data for a summoner using the Spectator v5 API.
+-   **utils.js:** Backend-specific utility functions that use shared logic from `commonUtils.js`.
+
+API Used
+--------
+
 Riot Games API: Used to fetch summoner data, including ranked stats and profile details.
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+License
+-------
+
+This project is licensed under the MIT License.

@@ -1,1 +1,8 @@
-.env
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+/config/.env
+
+# Webpack output
+/public/bundle.js

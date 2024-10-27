@@ -1,25 +1,41 @@
+/* General Styles */
 body {
     background-color: #1e1e1e; /* Dark background */
     color: #e0e0e0; /* Light text */
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
+    margin: 0; /* Reset any default margin for a cleaner layout */
 }
 
 h1 {
     color: #f5f5f5; /* Lighter color for headings */
+    margin-bottom: 20px;
 }
 
 form {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Space between form inputs */
 }
 
-input[type="text"] {
+input[type="text"], #summoner-tagline {
     background-color: #2c2c2c;
     color: #e0e0e0;
     border: 1px solid #555;
     padding: 10px;
     border-radius: 5px;
+    font-size: 16px;
+}
+
+input[type="text"] {
+    width: 250px; /* Slightly larger input width for readability */
+}
+
+#summoner-tagline {
+    width: 70px; /* Width for tagline input */
 }
 
 button {
@@ -29,56 +45,69 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
 }
 
 button:hover {
     background-color: #555; /* Button hover effect */
 }
 
-#stats {
-    margin-top: 20px;
+/* Shared Styles for Stats and In-Game Sections */
+#stats, #in-game-status {
+    max-width: 500px;
+    margin: 20px auto;
     background-color: #2c2c2c;
     padding: 20px;
     border-radius: 10px;
     color: #e0e0e0;
     border: 1px solid #555;
+    text-align: center;
     display: none; /* Hidden by default */
 }
 
-/* Reducing space between each stat entry */
-#stats p {
-    margin: 5px 0; /* Adjust this value to control the vertical spacing */
+/* Headings for Stats and In-Game Sections */
+#stats h2, #in-game-status h2 {
+    margin: 5px 0 15px;
+    font-size: 22px;
+    color: #f5f5f5;
 }
 
-/* Reducing space below headings */
-#stats h2, #stats h3 {
-    margin-bottom: 10px; /* Adjust to reduce space between headings and content */
+/* Paragraphs in Stats and In-Game Sections */
+#stats p, #in-game-status p {
+    margin: 0;
+    font-size: 16px;
+    text-align: center;
 }
 
-/* Reducing space below the profile icon */
+/* Profile Icon Styling in Stats Section */
 #stats img {
-    margin-bottom: 10px; /* Adjust to reduce space below profile icon */
+    display: block;
+    margin: 5px auto 40px auto; /* Reduce space above and below the profile icon */
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; /* Make the profile icon circular */
 }
 
-#in-game-status {
-    margin-top: 20px;
-    background-color: #2c2c2c;
-    padding: 15px;
-    border-radius: 10px;
-    color: #e0e0e0;
-    font-family: Arial, sans-serif;
-    display: none; /* Hidden by default */
+/* Specific Adjustments for Spacing */
+#stats h3, #in-game-status h3 {
+    margin-top: 5px; /* Remove the top margin to bring the text closer to the top */
+    margin-bottom: 13px; /* Adjust space below section headers */
 }
 
-#in-game-status strong {
-    color: #f5f5f5;  /* Lighter color for emphasis */
+#stats h2 {
+    margin-bottom: 5px; /* Reduce the space below the summoner name */
 }
 
+#stats p {
+    margin-top: 5px; /* Reduce the space above the level */
+}
+
+/* Loading Spinner */
 #loading-spinner {
     margin: 20px auto;
     text-align: center;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border: 3px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     border-top-color: #fff;
@@ -90,4 +119,9 @@ button:hover {
     to {
         transform: rotate(360deg);
     }
+}
+
+/* General Text Styles */
+h2, p {
+    line-height: 1.4; /* Reduce line spacing for better compactness */
 }

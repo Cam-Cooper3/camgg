@@ -1,3 +1,26 @@
+import { getGameModeName, getChampionNameById, formatTimeInGame, isRankedGame, getGameTypeName } from './utils.js';
+
+// Centralized error handler for displaying error messages
+function displayError(message, elementId = 'stats') {
+    const element = document.getElementById(elementId);
+    element.innerHTML = `<p style="color: red;">${message}</p>`;
+    element.style.display = 'block';
+}
+
+// Fetch data from the server or external APIs
+async function fetchData(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Error in API call');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return null;
+    }
+}
+
 document.getElementById('summoner-form').addEventListener('submit', async (e) => {
     e.preventDefault();  // Prevent form from reloading the page
 
@@ -12,15 +35,11 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
         summonerTagline = summonerTagline.replace("#", "");
     }
 
-    // Display warning to user if nothing is entered in prompt(s)
-    if (!summonerName) {
-        alert("Please enter both summoner name and tagline.");
+    // Display page warning to user if nothing is entered in prompt(s)
+    if (!summonerName || !summonerTagline) {  // Check for both summoner name and tagline
+        alert("Please enter a summoner name and tagline.");
         return;
     }
-
-    // Hide stats and in-game-status while fetching data
-    document.getElementById('stats').style.display = 'none';
-    document.getElementById('in-game-status').style.display = 'none';
 
     // Show loading spinner
     document.getElementById('loading-spinner').style.display = 'block';
@@ -39,15 +58,11 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
         const data = await response.json();
         displayStats(data, latestVersion);
 
+        // Pass puuid and latest version for in-game status check
         checkInGameStatus(data.puuid, latestVersion);
-
-        // Show the stats div after successfully fetching summoner data
-        document.getElementById('stats').style.display = 'block';
-
     } catch (error) {
         console.error('Error fetching summoner data:', error);
         document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found';
-        document.getElementById('stats').style.display = 'block';  // Show the error message
     } finally {
         // Hide loading spinner
         document.getElementById('loading-spinner').style.display = 'none';
@@ -56,13 +71,22 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
 
 // Function to check if summoner is in-game
 async function checkInGameStatus(puuid, latestVersion) {
+    if (!puuid) {
+        return;  // If no puuid is provided, exit the function
+    }
+
+    // Clear or hide the in-game status section before making a new request
+    document.getElementById('in-game-status').style.display = 'none';
+    document.getElementById('in-game-status').innerHTML = '';  // Clear previous content
+
     try {
         const inGameResponse = await fetch(`/ingame/${puuid}`);
         const inGameData = await inGameResponse.json();
 
         if (inGameData.message) {
+            // Show the in-game status section and display the message
+            document.getElementById('in-game-status').style.display = 'block';
             document.getElementById('in-game-status').innerText = inGameData.message;
-            document.getElementById('in-game-status').style.display = 'block';  // Show the error message
         } else {
             // Find the correct participant by matching puuid
             const participant = inGameData.participants.find(p => p.puuid === puuid);
@@ -72,71 +96,33 @@ async function checkInGameStatus(puuid, latestVersion) {
                 const championName = await getChampionNameById(participant.championId, latestVersion);
                 const timeInGame = formatTimeInGame(inGameData.gameLength);
                 
-                // Check if the match is ranked or not
-                const rankedStatus = isRankedGame(inGameData.gameQueueConfigId) ? 'Ranked Game' : 'Normal Game';
+                // Check if the game is custom or matched
+                const matchType = getGameTypeName(inGameData.gameType);
 
-                document.getElementById('in-game-status').innerHTML = `
-                    <strong>In-Game Status:</strong> <br>
-                    Game Mode: ${gameMode} <br>
-                    Match Type: ${rankedStatus} <br>
-                    Champion: ${championName} <br>
-                    Time in game: ${timeInGame}
-                `;
-                // Show the in-game-status div after successfully fetching in-game data
+                // Check if the game is ranked
+                const rankedStatus = isRankedGame(inGameData.gameQueueConfigId) ? 'Ranked Game' : matchType;
+
+                // Display the in-game status and show the section
                 document.getElementById('in-game-status').style.display = 'block';
+                document.getElementById('in-game-status').innerHTML = `
+                    <h3>In-Game Status:</h3>
+                    <p>Game Mode: ${gameMode}</p>
+                    <p>Match Type: ${rankedStatus}</p>
+                    <p>Champion: ${championName}</p>
+                    <p>Time in game: ${timeInGame}</p>
+                `;
             } else {
+                document.getElementById('in-game-status').style.display = 'block';
                 document.getElementById('in-game-status').innerText = 'Summoner not found in game.';
-                document.getElementById('in-game-status').style.display = 'block';  // Still show the div
             }
         }
     } catch (error) {
         console.error('Error fetching in-game status:', error);
+        document.getElementById('in-game-status').style.display = 'block';
         document.getElementById('in-game-status').innerText = 'Error retrieving in-game status.';
-        document.getElementById('in-game-status').style.display = 'block';  // Show the error message
     }
 }
 
-// Function to get champion name from Data Dragon
-async function getChampionNameById(championId, latestVersion) {
-    try {
-        // Fetch champion data using the latest game version
-        const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
-        const championData = await response.json();
-        
-        for (let champKey in championData.data) {
-            if (championData.data[champKey].key == championId) {
-                return championData.data[champKey].name;
-            }
-        }
-    } catch (error) {
-        console.error('Error fetching champion data:', error);
-    }
-    return 'Unknown Champion';
-}
-
-// Function to map the game mode to something more "human-readable"
-function getGameModeName(gameMode) {
-    const gameModes = {
-        CLASSIC: "Summoner's Rift",
-        ARAM: "ARAM",
-        // Add more mappings as needed
-    };
-    return gameModes[gameMode] || gameMode;  // Default to the original mode if not mapped
-}
-
-// Function to check if the game is a ranked match based on gameQueueConfigId
-function isRankedGame(gameQueueConfigId) {
-    const rankedQueues = [420, 440];  // Ranked Solo/Duo and Ranked Flex queue IDs
-    return rankedQueues.includes(gameQueueConfigId);
-}
-
-// Function to format the in-game time
-function formatTimeInGame(seconds) {
-    const minutes = (Math.floor(seconds / 60) + 3);
-    return `${minutes}m`;
-}
-
-// Function to display summoner ranked stats
 function displayStats(data, latestVersion) {
     const statsDiv = document.getElementById('stats');
     const profileIconUrl = `http://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/profileicon/${data.profileIconId}.png`;
@@ -145,23 +131,28 @@ function displayStats(data, latestVersion) {
 
     // Check if ranked data is available
     if (data.rankedData && data.rankedData.length > 0) {
-        rankedHtml = '<h3>Ranked Stats:</h3>';
-        data.rankedData.forEach(queue => {
-            const wins = queue.wins;
-            const losses = queue.losses;
+        // Filter for a specific ranked queue if needed (e.g., Solo/Duo)
+        const soloDuoQueue = data.rankedData.find(queue => queue.queueType === "RANKED_SOLO_5x5");
+
+        if (soloDuoQueue) {
+            const wins = soloDuoQueue.wins;
+            const losses = soloDuoQueue.losses;
             const totalGames = wins + losses;
             const winRate = ((wins / totalGames) * 100).toFixed(2);
 
-            rankedHtml += `
-                <p>Rank: ${queue.tier} ${queue.rank}</p>
-                <p>LP: ${queue.leaguePoints} LP</p>
+            rankedHtml = `
+                <h3>Ranked Stats:</h3>
+                <p>Rank: ${soloDuoQueue.tier} ${soloDuoQueue.rank}</p>
+                <p>LP: ${soloDuoQueue.leaguePoints}</p>
                 <p>Wins: ${wins}</p>
                 <p>Losses: ${losses}</p>
                 <p>Win Rate: ${winRate}%</p>
             `;
-        });
+        } else {
+            rankedHtml = '<p>No Solo/Duo ranked stats available.</p>';
+        }
     } else {
-        rankedHtml = '<p>This summoner has no ranked stats available.</p>';
+        rankedHtml = '<p>No ranked stats available.</p>';
     }
 
     statsDiv.innerHTML = `
@@ -170,4 +161,7 @@ function displayStats(data, latestVersion) {
         <img src="${profileIconUrl}" alt="Profile Icon" id="profile-icon" style="width:100px;height:100px;border-radius:50px">
         ${rankedHtml}
     `;
+
+    // Show the stats section if it's hidden
+    statsDiv.style.display = 'block';
 }
