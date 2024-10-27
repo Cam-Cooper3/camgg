@@ -102,11 +102,11 @@ async function checkInGameStatus(puuid, latestVersion) {
                 // Display the in-game status and show the section
                 document.getElementById('in-game-status').style.display = 'block';
                 document.getElementById('in-game-status').innerHTML = `
-                    <strong>In-Game Status:</strong> <br>
-                    Game Mode: ${gameMode} <br>
-                    Match Type: ${rankedStatus} <br>
-                    Champion: ${championName} <br>
-                    Time in game: ${timeInGame}
+                    <h3>In-Game Status:</h3>
+                    <p>Game Mode: ${gameMode}</p>
+                    <p>Match Type: ${rankedStatus}</p>
+                    <p>Champion: ${championName}</p>
+                    <p>Time in game: ${timeInGame}</p>
                 `;
             } else {
                 document.getElementById('in-game-status').style.display = 'block';
@@ -120,7 +120,6 @@ async function checkInGameStatus(puuid, latestVersion) {
     }
 }
 
-// Function to display summoner ranked stats
 function displayStats(data, latestVersion) {
     const statsDiv = document.getElementById('stats');
     const profileIconUrl = `http://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/profileicon/${data.profileIconId}.png`;
@@ -129,23 +128,28 @@ function displayStats(data, latestVersion) {
 
     // Check if ranked data is available
     if (data.rankedData && data.rankedData.length > 0) {
-        rankedHtml = '<h3>Ranked Stats:</h3>';
-        data.rankedData.forEach(queue => {
-            const wins = queue.wins;
-            const losses = queue.losses;
+        // Filter for a specific ranked queue if needed (e.g., Solo/Duo)
+        const soloDuoQueue = data.rankedData.find(queue => queue.queueType === "RANKED_SOLO_5x5");
+
+        if (soloDuoQueue) {
+            const wins = soloDuoQueue.wins;
+            const losses = soloDuoQueue.losses;
             const totalGames = wins + losses;
             const winRate = ((wins / totalGames) * 100).toFixed(2);
 
-            rankedHtml += `
-                Rank: ${queue.tier} ${queue.rank}</p>
-                LP: ${queue.leaguePoints} LP</p>
-                Wins: ${wins}</p>
-                Losses: ${losses}</p>
-                Win Rate: ${winRate}%</p>
+            rankedHtml = `
+                <h3>Ranked Stats:</h3>
+                <p>Rank: ${soloDuoQueue.tier} ${soloDuoQueue.rank}</p>
+                <p>LP: ${soloDuoQueue.leaguePoints}</p>
+                <p>Wins: ${wins}</p>
+                <p>Losses: ${losses}</p>
+                <p>Win Rate: ${winRate}%</p>
             `;
-        });
+        } else {
+            rankedHtml = '<p>No Solo/Duo ranked stats available.</p>';
+        }
     } else {
-        rankedHtml = '<p>This summoner has no ranked stats available.</p>';
+        rankedHtml = '<p>No ranked stats available.</p>';
     }
 
     statsDiv.innerHTML = `
@@ -154,7 +158,9 @@ function displayStats(data, latestVersion) {
         <img src="${profileIconUrl}" alt="Profile Icon" id="profile-icon" style="width:100px;height:100px;border-radius:50px">
         ${rankedHtml}
     `;
-    statsDiv.style.display = 'block';  // Show the stats div
+
+    // Show the stats section if it's hidden
+    statsDiv.style.display = 'block';
 }
 
 // Function to display in-game status
@@ -176,10 +182,10 @@ async function displayInGameStatus(inGameData, latestVersion, puuid) {
 
             inGameDiv.innerHTML = `
                 <h3>In-Game Status:</h3>
-                Game Mode: ${gameMode}
-                Match Type: ${rankedStatus}
-                Champion: ${championName}
-                Time in game: ${timeInGame}
+                <p>Game Mode: ${gameMode}</p>
+                <p>Match Type: ${rankedStatus}</p>
+                <p>Champion: ${championName}</p>
+                <p>Time in game: ${timeInGame}%</p>
             `;
         } else {
             inGameDiv.innerText = 'Summoner not found in game.';
@@ -188,4 +194,3 @@ async function displayInGameStatus(inGameData, latestVersion, puuid) {
 
     inGameDiv.style.display = 'block';  // Show the in-game-status div
 }
-
