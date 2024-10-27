@@ -2,7 +2,7 @@
 node_modules/
 
 # Environment variables
-.env
+/config/.env
 
 # Webpack output
 /public/bundle.js

@@ -1,5 +1,5 @@
 // Import shared utilities from commonUtils.js
-const { getGameModeName, getGameTypeName, formatTimeInGame, isRankedGame } = require('../shared/commonUtils');
+const { getGameModeName, getGameTypeName, formatTimeInGame, isRankedGame } = require('../common/commonUtils');
 
 // Frontend-specific logic for fetching champion name
 export async function getChampionNameById(championId, latestVersion) {
