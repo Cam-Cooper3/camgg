@@ -6,5 +6,6 @@ module.exports = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, '../public')  // Update to reflect new directory structure
     },
-    mode: 'development'
+    mode: 'development',
+    watch: true  // Enable automatic re-bundling on file changes
 };
