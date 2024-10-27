@@ -34,6 +34,9 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
         }
         const data = await response.json();
         displayStats(data, latestVersion);  // Pass the latest version to displayStats
+
+        // Pass puuid for in-game status check
+        checkInGameStatus(data.puuid);
     } catch (error) {
         console.error('Error fetching summoner data:', error);
         document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found';
@@ -43,6 +46,28 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
     }
 });
 
+
+// Function to check if summoner is in-game
+async function checkInGameStatus(puuid) {
+    try {
+        const inGameResponse = await fetch(`/ingame/${puuid}`);
+        const inGameData = await inGameResponse.json();
+
+        if (inGameData.message) {
+            document.getElementById('in-game-status').innerText = inGameData.message;
+        } else if (inGameData.participants && inGameData.participants.length > 0) {
+            // Display relevant in-game data
+            document.getElementById('in-game-status').innerText = `In-game: ${inGameData.gameMode}, Champion: ${inGameData.participants[0].championId}, Time in game: ${Math.floor(inGameData.gameLength / 60) + 2} minutes`;
+        } else {
+            document.getElementById('in-game-status').innerText = 'Unable to retrieve in-game data.';
+        }
+    } catch (error) {
+        console.error('Error fetching in-game status:', error);
+        document.getElementById('in-game-status').innerText = 'Error retrieving in-game status.';
+    }
+}
+
+// Function to display ranked stats of summoner
 function displayStats(data, latestVersion) {
     const statsDiv = document.getElementById('stats');
     const profileIconUrl = `http://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/profileicon/${data.profileIconId}.png`;
