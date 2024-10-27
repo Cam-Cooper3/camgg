@@ -58,6 +58,7 @@
 2. Click **Get Stats** to retrieve summoner data.
 3. The summoner's profile information, ranked stats, and win rate will be displayed.
 4. A loading spinner will appear while data is being fetched.
+5. ...
 
 ## Project Structure
 
@@ -74,9 +75,6 @@
 
 ## API Used
 Riot Games API: Used to fetch summoner data, including ranked stats and profile details.
-
-## Contributing
-Contributions are welcome! Please feel free to submit a pull request or open an issue if you have suggestions for improvements.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
