@@ -1,5 +1,5 @@
 document.getElementById('summoner-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
+    e.preventDefault();  // Prevent form from reloading the page
 
     const summonerName = document.getElementById('summoner-name').value.trim(); 
     var summonerTagline = document.getElementById('summoner-tagline').value.trim();
@@ -9,7 +9,7 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
 
     // Remove the # from the tagline if the user enters it
     if (summonerTagline.includes("#")) {
-        var summonerTagline = summonerTagline.replace("#", "");
+        summonerTagline = summonerTagline.replace("#", "");
     }
 
     // Display warning to user if nothing is entered in prompt(s)
@@ -17,6 +17,9 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
         alert("Please enter both summoner name and tagline.");
         return;
     }
+
+    // Show loading spinner
+    document.getElementById('loading-spinner').style.display = 'block';
 
     try {
         // Fetch the latest Data Dragon version
@@ -34,6 +37,9 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
     } catch (error) {
         console.error('Error fetching summoner data:', error);
         document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found';
+    } finally {
+        // Hide loading spinner
+        document.getElementById('loading-spinner').style.display = 'none';
     }
 });
 
