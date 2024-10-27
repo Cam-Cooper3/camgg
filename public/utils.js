@@ -1,14 +1,7 @@
-// Utility function to map game modes
-export function getGameModeName(gameMode) {
-    const gameModes = {
-        CLASSIC: "Summoner's Rift",
-        ARAM: "ARAM",
-        // Add more mappings as needed
-    };
-    return gameModes[gameMode] || gameMode;  // Default to the original mode if not mapped
-}
+// Import shared utilities from commonUtils.js
+const { getGameModeName, getGameTypeName, formatTimeInGame, isRankedGame } = require('../shared/commonUtils');
 
-// Utility function to fetch champion name by ID
+// Frontend-specific logic for fetching champion name
 export async function getChampionNameById(championId, latestVersion) {
     try {
         const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`);
@@ -25,15 +18,5 @@ export async function getChampionNameById(championId, latestVersion) {
     }
 }
 
-// Utility function to format time in-game
-export function formatTimeInGame(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
-}
-
-// Utility function to check if a game is ranked
-export function isRankedGame(gameQueueConfigId) {
-    const rankedQueues = [420, 440];  // Ranked Solo/Duo and Ranked Flex queue IDs
-    return rankedQueues.includes(gameQueueConfigId);
-}
+// Export the shared utilities for frontend use
+export { getGameModeName, getGameTypeName, formatTimeInGame, isRankedGame };

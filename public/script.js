@@ -1,4 +1,4 @@
-import { getGameModeName, getChampionNameById, formatTimeInGame, isRankedGame } from './utils.js';
+import { getGameModeName, getChampionNameById, formatTimeInGame, isRankedGame, getGameTypeName } from './utils.js';
 
 // Centralized error handler for displaying error messages
 function displayError(message, elementId = 'stats') {
@@ -56,10 +56,10 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
             throw new Error('Summoner not found or error in API call.');
         }
         const data = await response.json();
-        displayStats(data, latestVersion);  // Pass the latest version to displayStats
+        displayStats(data, latestVersion);
 
         // Pass puuid and latest version for in-game status check
-        checkInGameStatus(data.puuid, latestVersion);  // Pass latestVersion here
+        checkInGameStatus(data.puuid, latestVersion);
     } catch (error) {
         console.error('Error fetching summoner data:', error);
         document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found';
@@ -96,8 +96,11 @@ async function checkInGameStatus(puuid, latestVersion) {
                 const championName = await getChampionNameById(participant.championId, latestVersion);
                 const timeInGame = formatTimeInGame(inGameData.gameLength);
                 
-                // Check if the match is ranked
-                const rankedStatus = isRankedGame(inGameData.gameQueueConfigId) ? 'Ranked Game' : 'Normal Game';
+                // Check if the game is custom or matched
+                const matchType = getGameTypeName(inGameData.gameType);
+
+                // Check if the game is ranked
+                const rankedStatus = isRankedGame(inGameData.gameQueueConfigId) ? 'Ranked Game' : matchType;
 
                 // Display the in-game status and show the section
                 document.getElementById('in-game-status').style.display = 'block';
@@ -161,36 +164,4 @@ function displayStats(data, latestVersion) {
 
     // Show the stats section if it's hidden
     statsDiv.style.display = 'block';
-}
-
-// Function to display in-game status
-async function displayInGameStatus(inGameData, latestVersion, puuid) {
-    const inGameDiv = document.getElementById('in-game-status');
-
-    if (inGameData.message) {
-        inGameDiv.innerText = inGameData.message;
-    } else {
-        const participant = inGameData.participants.find(p => p.puuid === puuid);
-
-        if (participant) {
-            const gameMode = getGameModeName(inGameData.gameMode);
-            const championName = await getChampionNameById(participant.championId, latestVersion);  // Await the promise here
-            const timeInGame = formatTimeInGame(inGameData.gameLength);
-
-            // Check if the match is ranked
-            const rankedStatus = isRankedGame(inGameData.gameQueueConfigId) ? 'Ranked Game' : 'Normal Game';
-
-            inGameDiv.innerHTML = `
-                <h3>In-Game Status:</h3>
-                <p>Game Mode: ${gameMode}</p>
-                <p>Match Type: ${rankedStatus}</p>
-                <p>Champion: ${championName}</p>
-                <p>Time in game: ${timeInGame}%</p>
-            `;
-        } else {
-            inGameDiv.innerText = 'Summoner not found in game.';
-        }
-    }
-
-    inGameDiv.style.display = 'block';  // Show the in-game-status div
 }

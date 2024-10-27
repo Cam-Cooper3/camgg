@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const { getGameTypeName } = require('./utils');
 
 // Environment variable for API_KEY and region
 const API_KEY = process.env.RIOT_API_KEY;
@@ -13,8 +14,13 @@ router.get('/:puuid', async (req, res) => {
     try {
         // Use puuid for the Spectator v5 API request
         const inGameResponse = await axios.get(`https://${sum_region}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}?api_key=${API_KEY}`);
-        console.log('In-game API response:', inGameResponse.data);
-        res.json(inGameResponse.data);
+        const gameData = inGameResponse.data;
+
+        // Use the utility function to determine if the game is a Custom Match or Matched Game
+        const matchType = getGameTypeName(gameData.gameType);
+
+        // Send the game data and match type in the response
+        res.json({ ...gameData, matchType });
     } catch (error) {
         handleApiError(error, res);
     }
