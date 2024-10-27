@@ -62,6 +62,10 @@
 
 6. Open your browser and navigate to `http://localhost:3000` to access the tool.
 
+> [!NOTE]
+> - **During development:** Enable watch mode in `webpack.config.js` to automatically bundle when you make changes.
+> - **Before deployment:** Manually bundle once with `webpack --mode production` for optimized production builds and change `watch: true` in `webpack.config.js`.
+
 ## Usage
 
 1. Enter a **Summoner Name** and a **Tagline** (e.g., `SummonerName` with `#NA1`).
