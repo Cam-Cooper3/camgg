@@ -8,7 +8,7 @@ const API_KEY = process.env.RIOT_API_KEY;
 
 app.use(express.static('public'));
 
-// Existing route to fetch summoner and ranked data
+// Route to fetch summoner and ranked data
 app.get('/summoner/:name/:tagline', async (req, res) => {
     const summonerName = encodeURIComponent(req.params.name);
     const summonerTagline = encodeURIComponent(req.params.tagline);
@@ -27,13 +27,13 @@ app.get('/summoner/:name/:tagline', async (req, res) => {
         // Get ranked data using summoner ID
         const rankedResponse = await axios.get(`https://${sum_region}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}?api_key=${API_KEY}`);
 
-        // Send all data to the frontend, including puuid and ranked data
+        // Send all data to the frontend (client)
         res.json({
             summonerName: gameName,
             summonerLevel: summonerResponse.data.summonerLevel,
             profileIconId: summonerResponse.data.profileIconId,
             rankedData: rankedResponse.data,
-            puuid: puuid // Pass puuid to the client
+            puuid: puuid
         });
     } catch (error) {
         if (error.response) {
@@ -44,10 +44,10 @@ app.get('/summoner/:name/:tagline', async (req, res) => {
     }
 });
 
-// New route to check if summoner is in-game
+// Route to check if summoner is in-game
 app.get('/ingame/:puuid', async (req, res) => {
     const puuid = req.params.puuid;
-    const sum_region = 'na1';  // Update this based on your region
+    const sum_region = 'na1';
 
     try {
         // Use puuid for the Spectator v5 API request
