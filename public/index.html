@@ -13,10 +13,16 @@
         <input type="text" id="summoner-tagline" placeholder="#NA1" size="4px">
         <button type="submit">Get Stats</button>
     </form>
+
+    <!-- Loading Spinner -->
     <div id="loading-spinner" style="display: none;"></div>
-    <div id="stats"></div>
-    <div id="in-game-status" style="margin-top: 20px;">
-    </div>
-    <script src="script.js"></script>
+
+    <!-- Stats Display -->
+    <div id="stats" style="display: none;"></div>
+
+    <!-- In-Game Status Display -->
+    <div id="in-game-status" style="display: none; margin-top: 20px;"></div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
