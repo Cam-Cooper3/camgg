@@ -2,21 +2,23 @@
 
 ## Overview
 
-**CAM.GG** is a League of Legends stats tool that retrieves real-time summoner data, including rank, win rate, and more using Riot Games' API. The project also includes a loading spinner to provide visual feedback while data is being fetched.
+**CAM.GG** is a web application allows users to search for a League of Legends summoner by name and retrieve their ranked data, such as rank and win rate, using the Riot Games API.
 
 ## Features
 
-- Retrieve summoner details (level, profile icon, ranked stats) by entering a summoner's name and tagline.
-- Displays ranked stats, including rank tier, LP, wins, losses, and win rate.
-- Responsive design with a dark theme for a smooth user experience.
-- Loading spinner for visual feedback during data fetching.
+-   Fetch summoner data based on the summoner's name and tagline.
+-   Display summoner's rank and win rate for different queue types.
+-   Shows a loading spinner while fetching data.
+-   Basic error handling for invalid requests or API issues.
 
 ## Tech Stack
 
-- **Node.js** (Express for server-side handling)
-- **Axios** (for making API requests)
-- **HTML/CSS/JavaScript** (for the frontend)
-- **Riot Games API** (for summoner data)
+-   **Node.js & Express**: Handles backend routes and API requests.
+-   **Axios**: For making HTTP requests to Riot's API.
+-   **HTML/CSS**: Frontend structure and styling.
+-   **JavaScript**: Frontend interactions and data rendering.
+-   **Dotenv**: For managing environment variables.
+-   **Riot Games API**: Used for fetching summoner and ranked data.
 
 ## Installation and Setup
 
@@ -29,8 +31,8 @@
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/cam.gg.git
-    cd cam.gg
+    git clone https://github.com/yourusername/league-app.git
+    cd league-app
     ```
 
 2. **Install dependencies**:
@@ -50,31 +52,36 @@
     node server.js
     ```
 
-5. Open your browser and navigate to `http://localhost:3000` to use the tool.
+5. Open your browser and navigate to `http://localhost:3000` to access the tool.
 
 ## Usage
 
 1. Enter a **Summoner Name** and a **Tagline** (e.g., `SummonerName` with `#NA1`).
 2. Click **Get Stats** to retrieve summoner data.
 3. The summoner's profile information, ranked stats, and win rate will be displayed.
-4. A loading spinner will appear while data is being fetched.
-5. ...
+4. ...
 
 ## Project Structure
 
 ```bash
-├── public
-│   ├── index.html      # Main webpage structure
-│   ├── script.js       # JavaScript for handling API requests and DOM updates
-│   ├── style.css       # Styling for the webpage (dark theme, spinner, etc.)
-├── server.js           # Node.js server using Express and Axios
-├── .env                # Environment variables (not included in the repository)
-├── README.md           # Project documentation (this file)
-├── package.json        # Project dependencies and scripts
+league-app/
+├── .env                    # Environment variables (API key)
+├── package.json            # Project metadata and dependencies
+├── package-lock.json       # Dependency lock file
+├── README.md               # Project documentation
+├── server.js               # Main server-side code
+├── public/                 # Frontend code and assets
+│   ├── index.html          # Main HTML file
+│   ├── script.js           # Frontend JavaScript logic
+│   ├── style.css           # Styling for the application
+│   └── utils.js            # Utility functions for the frontend
+└── routes/                 # API routes for backend
+    ├── summonerRoutes.js   # Routes for summoner-related API calls
+    └── inGameRoutes.js     # Routes for live game data (feature paused)`
 ```
 
 ## API Used
 Riot Games API: Used to fetch summoner data, including ranked stats and profile details.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
