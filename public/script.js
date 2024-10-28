@@ -51,6 +51,28 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
     }
 });
 
+// Event listener for the "CAM.GG" link to reset the page
+document.getElementById('home-link').addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent the default anchor behavior
+
+    // Clear form inputs
+    document.getElementById('summoner-name').value = '';
+    document.getElementById('summoner-tagline').value = '';
+
+    // Hide and clear stats and in-game status sections
+    document.getElementById('stats').style.display = 'none';
+    document.getElementById('stats').innerHTML = '';
+
+    document.getElementById('in-game-status').style.display = 'none';
+    document.getElementById('in-game-status').innerHTML = '';
+
+    // Hide champion icon
+    document.getElementById('champion-icon').style.display = 'none';
+
+    // Optionally reset focus to the form
+    document.getElementById('summoner-name').focus();
+});
+
 // Function to check if summoner is in-game
 async function checkInGameStatus(puuid, latestVersion) {
     if (!puuid) {

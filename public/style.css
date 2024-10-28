@@ -13,6 +13,12 @@ h1 {
     margin-bottom: 20px;
 }
 
+#home-link {
+    color: inherit; /* Keeps the original color of the heading */
+    text-decoration: none; /* Removes the underline from the link */
+    cursor: pointer; /* Changes the cursor to a pointer for better UX */
+}
+
 form {
     margin-bottom: 20px;
     display: flex;
