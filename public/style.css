@@ -30,10 +30,9 @@ header {
 /* Form styling */
 form {
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid #f0f0f0ab;;
+    border: 1px solid #f0f0f0ab;
     border-radius: 8px;
     padding: 20px;
-    border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     display: flex;
     gap: 10px;
@@ -50,7 +49,7 @@ input[type="text"] {
 }
 
 input[type="text"]::placeholder {
-    color: rgba(192, 192, 192, 0.3); /* Adjust transparency here */
+    color: rgba(192, 192, 192, 0.5); /* More transparent placeholder */
 }
 
 /* Button styling */
@@ -84,6 +83,10 @@ input[type="text"]::placeholder {
     width: 90%;
     max-width: 600px;
     text-align: center;
+}
+
+.card p {
+    margin: 5px 0; /* Reduce space between fields */
 }
 
 /* In-game status styling for champion icon */
