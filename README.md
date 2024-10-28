@@ -2,7 +2,7 @@
 
 ## Overview
 
-**CAM.GG** is a web application that allows users to search for a League of Legends summoner by name and retrieve their ranked data, such as rank and win rate, using the Riot Games API. It also displays whether the summoner is currently in a live game, including information about the game type, mode, and the champion being played.
+**CAM.GG** is a lightweight local web app that lets users search for a League of Legends summoner and retrieve their ranked data, including rank and win rate, via the Riot Games API. It also shows if the summoner is in a live game, along with details like game type, mode, and the champion being played.
 
 ## Features
 
