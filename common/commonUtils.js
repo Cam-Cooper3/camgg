@@ -19,10 +19,16 @@ function getGameTypeName(gameType) {
 
 // Utility function to format time in-game
 function formatTimeInGame(seconds) {
+    // Add an offset to adjust for discrepancy
+    const OFFSET = 150; // Offset of 150 seconds (2.5 minutes)
+    seconds = Math.max(0, seconds + OFFSET);
+
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}m ${remainingSeconds}s`;
 }
+
+
 
 // Utility function to check if a game is ranked
 function isRankedGame(gameQueueConfigId) {

@@ -12,17 +12,6 @@
 - Shows a loading spinner while fetching data.
 - Basic error handling for invalid requests or API issues.
 
-## Tech Stack
-
-- **Node.js & Express**: Handles backend routes and API requests.
-- **Axios**: For making HTTP requests to Riot's API.
-- **HTML/CSS**: Frontend structure and styling.
-- **JavaScript**: Frontend interactions and data rendering.
-- **Dotenv**: For managing environment variables.
-- **Riot Games API**: Used for fetching summoner and ranked data.
-- **Webpack**: For bundling frontend JavaScript.
-- **CommonJS**: For module handling in Node.js.
-
 ## Installation and Setup
 
 ### Prerequisites
@@ -73,6 +62,17 @@
 3. The summoner's profile information, ranked stats, and win rate will be displayed.
 4. If the summoner is currently in a game, the in-game status will be shown, including game mode, match type (Ranked/Normal/Custom), and the champion they are playing.
 
+## Tech Stack
+
+- **Node.js & Express**: Handles backend routes and API requests.
+- **Axios**: For making HTTP requests to Riot's API.
+- **HTML/CSS**: Frontend structure and styling.
+- **JavaScript**: Frontend interactions and data rendering.
+- **Dotenv**: For managing environment variables.
+- **Riot Games API**: Used for fetching summoner and ranked data.
+- **Webpack**: For bundling frontend JavaScript.
+- **CommonJS**: For module handling in Node.js.
+
 ## Project Structure
 
 ```bash
@@ -101,23 +101,67 @@ league-app/
 └── README.md                 # Project documentation
 ```
 
-**Shared Utilities (common/ directory):**
+### Common Utilities
 
--   **commonUtils.js:** Contains shared utility functions, such as retrieving game modes, formatting in-game time, and checking ranked status, used by both frontend and backend.
+**`/common/commonUtils.js`**: Contains shared utility functions such as:
 
-**Frontend (public/ directory):**
+-   `getGameModeName()`: Maps game modes to readable names.
+-   `getGameTypeName()`: Identifies the game type (e.g., Custom or Normal).
+-   `formatTimeInGame()`: Formats time from seconds into a readable `minutes:seconds` format.
+-   `isRankedGame()`: Checks if a game is a ranked game based on queue ID.
 
--   **index.html:** Basic structure with inputs for summoner name and tagline, and a button to submit the form.
--   **script.js:** Handles the frontend logic, such as making API calls to the backend, handling responses, and updating the UI.
--   **style.css:** Provides styling, mainly focusing on a dark theme with clean, minimal design.
--   **utils.js:** Contains frontend-specific utilities, such as fetching champion names from the Riot API and exporting shared utilities.
+### Configuration
 
-**Backend (/server/routes/ directories):**
+**`/config/.env`**: Contains environment variables, primarily the Riot API key.
 
--   **server.js:** Main server file, setting up Express.js, serving static files, and routing API requests to different modules (summoner and in-game data).
--   **summonerRoutes.js:** Fetches summoner data and ranked stats from the Riot API using summoner name and tagline.
--   **inGameRoutes.js:** Fetches current in-game data for a summoner using the Spectator v5 API.
--   **utils.js:** Backend-specific utility functions that use shared logic from `commonUtils.js`.
+**`/config/webpack.config.js`**: Contains the Webpack configuration used for bundling the frontend JavaScript.
+
+### Frontend (Public)
+
+**`/public/index.html`**:
+
+-   Defines the structure of the webpage.
+-   Contains the summoner name and tagline input fields and a form to submit.
+-   Elements to display loading, stats, in-game status, and champion information.
+
+**`/public/script.js`**:
+
+-   Handles form submission for summoner search.
+-   Fetches summoner data and displays ranked information.
+-   Checks if the summoner is in a game and displays in-game details.
+
+**`/public/style.css`**:
+
+-   Contains the styling for the page, which includes a dark theme.
+
+**`/public/utils.js`**:
+
+-   Imports shared utilities from `commonUtils.js`.
+-   Has a frontend-specific function, `getChampionNameById()`, which fetches champion names using Data Dragon API.
+
+### Backend (Server)
+
+**`/server/server.js`**:
+
+-   Sets up the Express server.
+-   Serves static files from the `public` directory.
+-   Defines routes for `/summoner` and `/ingame` using imported route modules.
+
+**`/server/routes/inGameRoutes.js`**:
+
+-   Defines the `/ingame/:puuid` endpoint.
+-   Uses the Riot Spectator API to check if a summoner is currently in a game.
+-   Responds with in-game data or error messages.
+
+**`/server/routes/summonerRoutes.js`**:
+
+-   Defines the `/summoner/:name/:tagline` endpoint.
+-   Retrieves a summoner's data, including PUUID, level, profile icon, and ranked data.
+
+**`/server/routes/utils.js`**:
+
+-   Imports utility functions from `commonUtils.js`.
+-   Has a backend-specific function, `getChampionNameById()`, to fetch champion names using Data Dragon API.
 
 API Used
 --------
