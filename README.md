@@ -9,7 +9,6 @@
 - Fetch summoner data based on the summoner's name and tagline.
 - Display summoner's rank and win rate for different queue types.
 - Display live game status, including game mode, match type (Ranked/Normal/Custom), and champion details.
-- Shows a loading spinner while fetching data.
 - Basic error handling for invalid requests or API issues.
 
 ## Installation and Setup
