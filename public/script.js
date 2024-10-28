@@ -41,6 +41,10 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
     } catch (error) {
         console.error('Error fetching summoner data:', error);
         document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found';
+        document.getElementById('stats').style.display = 'block';
+        
+        // Hide the in-game status div in case of an error
+        document.getElementById('in-game-status').style.display = 'none';
     } finally {
         // Hide loading spinner
         document.getElementById('loading-spinner').style.display = 'none';
@@ -60,13 +64,17 @@ async function checkInGameStatus(puuid, latestVersion) {
 
     try {
         const inGameResponse = await fetch(`/ingame/${puuid}`);
+        if (!inGameResponse.ok) {
+            throw new Error('Error fetching in-game data.');
+        }
+
         const inGameData = await inGameResponse.json();
         console.log("In-Game Data Response:", inGameData);
 
         if (inGameData.message) {
-            console.log("No active game:", inGameData.message);
+            // Summoner is not currently in a game
             document.getElementById('in-game-status').style.display = 'block';
-            document.getElementById('in-game-status').innerText = inGameData.message;
+            document.getElementById('in-game-status').innerHTML = '<p>Summoner is not currently in a game.</p>';
         } else {
             const participant = inGameData.participants.find(p => p.puuid === puuid);
 
@@ -103,14 +111,13 @@ async function checkInGameStatus(puuid, latestVersion) {
                 `;
             } else {
                 console.log("Participant with matching puuid not found in game.");
-                document.getElementById('in-game-status').style.display = 'block';
-                document.getElementById('in-game-status').innerText = 'Summoner not found in game.';
+                document.getElementById('in-game-status').style.display = 'none';
             }
         }
     } catch (error) {
         console.error('Error fetching in-game status:', error);
-        document.getElementById('in-game-status').style.display = 'block';
-        document.getElementById('in-game-status').innerText = 'Error retrieving in-game status.';
+        // Hide the in-game status div in case of an error
+        document.getElementById('in-game-status').style.display = 'none';
     }
 }
 
