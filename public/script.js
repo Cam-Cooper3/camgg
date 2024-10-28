@@ -1,34 +1,13 @@
 import { getGameModeName, getChampionNameById, formatTimeInGame, isRankedGame, getGameTypeName } from './utils.js';
 
-// Centralized error handler for displaying error messages
-function displayError(message, elementId = 'stats') {
-    const element = document.getElementById(elementId);
-    element.innerHTML = `<p style="color: red;">${message}</p>`;
-    element.style.display = 'block';
-}
-
-// Fetch data from the server or external APIs
-async function fetchData(url) {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Error in API call');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return null;
-    }
-}
-
 document.getElementById('summoner-form').addEventListener('submit', async (e) => {
     e.preventDefault();  // Prevent form from reloading the page
 
     const summonerName = document.getElementById('summoner-name').value.trim(); 
-    var summonerTagline = document.getElementById('summoner-tagline').value.trim();
-    
+    let summonerTagline = document.getElementById('summoner-tagline').value.trim();
+
     // If the user does not enter a tagline, default to NA1
-    var summonerTagline = summonerTagline || 'NA1';
+    summonerTagline = summonerTagline || 'NA1';
 
     // Remove the # from the tagline if the user enters it
     if (summonerTagline.includes("#")) {
@@ -36,7 +15,7 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
     }
 
     // Display page warning to user if nothing is entered in prompt(s)
-    if (!summonerName || !summonerTagline) {  // Check for both summoner name and tagline
+    if (!summonerName || !summonerTagline) {
         alert("Please enter a summoner name and tagline.");
         return;
     }
@@ -45,21 +24,20 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
     document.getElementById('loading-spinner').style.display = 'block';
 
     try {
-        // Fetch the latest Data Dragon version
         const versionResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
         const versions = await versionResponse.json();
-        const latestVersion = versions[0];  // Get the latest version
+        const latestVersion = versions[0];
 
-        // Send a request to the server to get summoner data
         const response = await fetch(`/summoner/${encodeURIComponent(summonerName)}/${encodeURIComponent(summonerTagline)}`);
         if (!response.ok) {
             throw new Error('Summoner not found or error in API call.');
         }
         const data = await response.json();
+        console.log("Summoner Data:", data); // Debugging Log
         displayStats(data, latestVersion);
 
-        // Pass puuid and latest version for in-game status check
-        checkInGameStatus(data.puuid, latestVersion);
+        // Check if summoner is in-game
+        await checkInGameStatus(data.puuid, latestVersion);
     } catch (error) {
         console.error('Error fetching summoner data:', error);
         document.getElementById('stats').innerText = 'Error retrieving data. Summoner not found';
@@ -72,7 +50,8 @@ document.getElementById('summoner-form').addEventListener('submit', async (e) =>
 // Function to check if summoner is in-game
 async function checkInGameStatus(puuid, latestVersion) {
     if (!puuid) {
-        return;  // If no puuid is provided, exit the function
+        console.error("PUUID not found.");
+        return;
     }
 
     // Clear or hide the in-game status section before making a new request
@@ -82,36 +61,48 @@ async function checkInGameStatus(puuid, latestVersion) {
     try {
         const inGameResponse = await fetch(`/ingame/${puuid}`);
         const inGameData = await inGameResponse.json();
+        console.log("In-Game Data Response:", inGameData);
 
         if (inGameData.message) {
-            // Show the in-game status section and display the message
+            console.log("No active game:", inGameData.message);
             document.getElementById('in-game-status').style.display = 'block';
             document.getElementById('in-game-status').innerText = inGameData.message;
         } else {
-            // Find the correct participant by matching puuid
             const participant = inGameData.participants.find(p => p.puuid === puuid);
 
             if (participant) {
                 const gameMode = getGameModeName(inGameData.gameMode);
                 const championName = await getChampionNameById(participant.championId, latestVersion);
+                const championImageUrl = `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${championName}.png`;
+
+                // Format and display in-game time
                 const timeInGame = formatTimeInGame(inGameData.gameLength);
-                
+
                 // Check if the game is custom or matched
                 const matchType = getGameTypeName(inGameData.gameType);
 
                 // Check if the game is ranked
                 const rankedStatus = isRankedGame(inGameData.gameQueueConfigId) ? 'Ranked Game' : matchType;
 
-                // Display the in-game status and show the section
-                document.getElementById('in-game-status').style.display = 'block';
-                document.getElementById('in-game-status').innerHTML = `
-                    <h3>In-Game Status:</h3>
-                    <p>Game Mode: ${gameMode}</p>
-                    <p>Match Type: ${rankedStatus}</p>
-                    <p>Champion: ${championName}</p>
-                    <p>Time in game: ${timeInGame}</p>
+                // Set up the HTML for the in-game status including the champion icon
+                const inGameStatusDiv = document.getElementById('in-game-status');
+                inGameStatusDiv.style.display = 'flex';
+                inGameStatusDiv.style.alignItems = 'center';
+                inGameStatusDiv.style.justifyContent = 'center';
+                inGameStatusDiv.style.textAlign = 'center';
+
+                inGameStatusDiv.innerHTML = `
+                    <div style="flex-grow: 1;">
+                        <h3>In-Game Status:</h3>
+                        <p>Game Mode: ${gameMode}</p>
+                        <p>Match Type: ${rankedStatus}</p>
+                        <p>Champion: ${championName}</p>
+                        <p>Time in game: ${timeInGame}</p>
+                    </div>
+                    <img id="champion-icon" src="${championImageUrl}" alt="Champion Icon" style="width: 90px; height: 90px; margin-left: -100px; border-radius: 10px;">
                 `;
             } else {
+                console.log("Participant with matching puuid not found in game.");
                 document.getElementById('in-game-status').style.display = 'block';
                 document.getElementById('in-game-status').innerText = 'Summoner not found in game.';
             }
@@ -125,13 +116,11 @@ async function checkInGameStatus(puuid, latestVersion) {
 
 function displayStats(data, latestVersion) {
     const statsDiv = document.getElementById('stats');
-    const profileIconUrl = `http://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/profileicon/${data.profileIconId}.png`;
+    const profileIconUrl = `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/profileicon/${data.profileIconId}.png`;
 
     let rankedHtml = '';
 
-    // Check if ranked data is available
     if (data.rankedData && data.rankedData.length > 0) {
-        // Filter for a specific ranked queue if needed (e.g., Solo/Duo)
         const soloDuoQueue = data.rankedData.find(queue => queue.queueType === "RANKED_SOLO_5x5");
 
         if (soloDuoQueue) {
@@ -162,6 +151,5 @@ function displayStats(data, latestVersion) {
         ${rankedHtml}
     `;
 
-    // Show the stats section if it's hidden
     statsDiv.style.display = 'block';
 }
