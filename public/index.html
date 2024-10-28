@@ -5,19 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CAM.GG</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1><a href="#" id="home-link">CAM.GG</a></h1>
-    <form id="summoner-form">
-        <input type="text" id="summoner-name" placeholder="Enter Summoner Name">
-        <input type="text" id="summoner-tagline" placeholder="#NA1" size="4px">
-        <button type="submit">Get Stats</button>
-    </form>
-    <div id="loading-spinner" style="display: none;"></div>
-    <div id="stats" style="display: none;"></div>
-    <div id="in-game-status" style="display: none;">
-        <img id="champion-icon" alt="Champion Icon" style="display: none; width: 100px; height: 100px;">
-    </div>
+    <header>
+        <h1><a href="#" id="home-link">CAM.GG</a></h1>
+    </header>
+    <main>
+        <form id="summoner-form">
+            <input type="text" id="summoner-name" placeholder="Enter Summoner Name">
+            <input type="text" id="summoner-tagline" placeholder="#NA1" size="4px">
+            <button type="submit" class="btn-primary">Get Stats</button>
+        </form>
+        <div id="loading-spinner" style="display: none;"></div>
+        <div id="stats" class="card" style="display: none;"></div>
+        <div id="in-game-status" class="card" style="display: none;">
+            <img id="champion-icon" alt="Champion Icon" style="display: none; width: 100px; height: 100px;">
+        </div>
+    </main>
     <script src="/bundle.js"></script>
 </body>
 </html>
+<script>
+    const form = document.getElementById('summoner-form');
+    const button = document.querySelector('.btn-primary');
+
+    // Function to handle button interactions (mouse click or Enter key press)
+    function handleButtonInteraction(event) {
+        if (event.type === 'click' || (event.type === 'keydown' && event.key === 'Enter')) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Simulate hover and active effects for Enter key press
+            button.classList.add('hover'); // Add hover effect
+            button.classList.add('active'); // Add active effect
+
+            // Remove hover and active effects after a delay to simulate the interaction
+            setTimeout(() => {
+                button.classList.remove('hover');
+                button.classList.remove('active');
+            }, 200);
+
+            // Trigger the form submission
+            form.requestSubmit();
+        }
+    }
+
+    // Attach event listeners to the button and form
+    button.addEventListener('click', handleButtonInteraction);
+    form.addEventListener('keydown', handleButtonInteraction);
+
+    // Add hover class for hover styling (using mouse)
+    button.addEventListener('mouseenter', () => {
+        button.classList.add('hover');
+    });
+    button.addEventListener('mouseleave', () => {
+        button.classList.remove('hover');
+    });
+</script>
+
