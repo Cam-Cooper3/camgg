@@ -28,8 +28,6 @@ function formatTimeInGame(seconds) {
     return `${minutes}m ${remainingSeconds}s`;
 }
 
-
-
 // Utility function to check if a game is ranked
 function isRankedGame(gameQueueConfigId) {
     const rankedQueues = [420, 440];  // Ranked Solo/Duo and Ranked Flex queue IDs
